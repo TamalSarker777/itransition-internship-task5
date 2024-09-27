@@ -27,8 +27,10 @@ export const generateUserData = (region, seed, pageNumber) => {
   for (let i = 0; i < total_range; i++) {
     users.push({
       randomIdent: faker.string.uuid(),
-      name: faker.person.fullName(),
-      address: `${faker.location.city()}, ${faker.location.streetAddress()}, ${faker.location.zipCode()}`,
+      name: `${faker.person.firstName()} ${faker.person.middleName()} ${faker.person.lastName()}`,
+      address: `${faker.location.city()}, ${faker.location.street()}, ${faker.location.buildingNumber()}, ${faker.string.numeric(
+        { length: 3 }
+      )}`,
       phone: faker.phone.number(),
     });
   }
