@@ -11,12 +11,17 @@ function App() {
   const [sliderValue, setSliderValue] = useState(0);
   const [seedValue, setSeedValue] = useState(42);
   const [users, setUsers] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
-    const newUsers = generateUserData(seletedCountry, seedValue, 1); // Initially page is 1
+    const newUsers = generateUserData(seletedCountry, seedValue, pageNumber); // Initially page is 1
     const usersWithErrors = applyErrors(newUsers, sliderValue);
-    setUsers(usersWithErrors);
-  }, [seletedCountry, seedValue, sliderValue]);
+    if (pageNumber === 1) {
+      setUsers(usersWithErrors);
+    } else {
+      setUsers((prevUsers) => [...prevUsers, ...usersWithErrors]);
+    }
+  }, [seletedCountry, seedValue, sliderValue, pageNumber]);
 
   const getSelectedRegion = (event) => {
     setSelectedCountry(event.target.value);
@@ -41,13 +46,9 @@ function App() {
     setSeedValue(Math.floor(Math.random() * 10000) + 1);
   }
 
-  // -------------------------------------------
   const loadMore = useCallback(() => {
-    const newUsers = generateUserData(seletedCountry, seedValue, 2);
-    const usersWithErrors = applyErrors(newUsers, sliderValue);
-
-    setUsers((prevUsers) => [...prevUsers, ...usersWithErrors]);
-  }, [seletedCountry, seedValue, sliderValue]);
+    setPageNumber((prevPage) => prevPage + 1); // Increment page number
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
