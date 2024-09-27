@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  padding: 0;
+  
+}
+
+.container {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between; 
+  background-color: rgba(50, 47, 100, 0.808);
+  border-radius: 10px;
+  
+}
+
+#seed {
+  border-radius: 8px;
+}
+#errorInput{
+  border-radius: 8px;
+}
+#region{
+  border-radius: 8px;
+}
+
+
+
+.column {
+  flex: 1;
+  margin-top: 10px; 
+  padding: 10px;
+  text-align: center; 
+ 
+}
+
+.column:first-child {
+  margin-left: 0; 
+}
+
+.column:last-child {
+  margin-right: 0; 
+}
