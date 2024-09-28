@@ -87,6 +87,10 @@ const addRandomCharacter = (str) => {
 };
 
 export const applyErrors = (userData, totalErrors) => {
+  if (totalErrors <= 0) {
+    return userData;
+  }
+
   let modifiedData = [...userData];
 
   for (let i = 0; i < totalErrors; i++) {
@@ -117,4 +121,14 @@ export const applyErrors = (userData, totalErrors) => {
   }
 
   return modifiedData;
+};
+
+export const ErrorHandle = (country, seed, errorValue, pages) => {
+  let newUsers = [];
+  for (let p = 1; p <= pages; p++) {
+    const generatedUsers = generateUserData(country, seed, p);
+    const usersWithErrors = applyErrors(generatedUsers, errorValue);
+    newUsers = [...newUsers, ...usersWithErrors];
+  }
+  return newUsers;
 };
