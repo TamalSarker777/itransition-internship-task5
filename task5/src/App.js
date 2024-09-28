@@ -6,7 +6,7 @@ import "./App.css";
 import {
   generateUserData,
   applyErrors,
-  UpdateForSeedChange,
+  ErrorHandle,
 } from "./components/dataGenerators";
 import Table from "react-bootstrap/Table";
 
@@ -16,6 +16,7 @@ function App() {
   const [seedValue, setSeedValue] = useState(42);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const newUsers = generateUserData(selectedCountry, seedValue, page);
@@ -25,6 +26,7 @@ function App() {
     } else {
       setUsers((prevUsers) => [...prevUsers, ...usersWithErrors]);
     }
+    setTotalPages(page);
   }, [selectedCountry, seedValue, page]);
 
   const getSelectedRegion = (event) => {
@@ -39,8 +41,14 @@ function App() {
       alert("The value should be from 0 to 1000");
     } else {
       setSliderValue(value);
-      const usersWithErrors = applyErrors(users, sliderValue);
-      setUsers(usersWithErrors);
+
+      const newUsers = ErrorHandle(
+        selectedCountry,
+        seedValue,
+        value,
+        totalPages
+      );
+      setUsers(newUsers);
     }
   };
 
