@@ -3,28 +3,34 @@ import { FaShuffle } from "react-icons/fa6";
 import { Navbar } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import "./App.css";
-import { generateUserData, applyErrors } from "./components/dataGenerators";
+import {
+  generateUserData,
+  applyErrors,
+  UpdateForSeedChange,
+} from "./components/dataGenerators";
 import Table from "react-bootstrap/Table";
 
 function App() {
-  const [seletedCountry, setSelectedCountry] = useState("usa");
+  const [selectedCountry, setSelectedCountry] = useState("usa");
   const [sliderValue, setSliderValue] = useState(0);
   const [seedValue, setSeedValue] = useState(42);
   const [users, setUsers] = useState([]);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const newUsers = generateUserData(seletedCountry, seedValue, pageNumber); // Initially page is 1
+    const newUsers = generateUserData(selectedCountry, seedValue, page);
     const usersWithErrors = applyErrors(newUsers, sliderValue);
-    if (pageNumber === 1) {
+    if (page === 1) {
       setUsers(usersWithErrors);
     } else {
       setUsers((prevUsers) => [...prevUsers, ...usersWithErrors]);
     }
-  }, [seletedCountry, seedValue, sliderValue, pageNumber]);
+  }, [selectedCountry, seedValue, page]);
 
   const getSelectedRegion = (event) => {
     setSelectedCountry(event.target.value);
+    setUsers([]);
+    setPage(1);
   };
 
   const handleSlider = (event) => {
@@ -32,7 +38,7 @@ function App() {
     if (value > 1000 || value < 0) {
       alert("The value should be from 0 to 1000");
     } else {
-      setSliderValue(event.target.value);
+      setSliderValue(value);
       const usersWithErrors = applyErrors(users, sliderValue);
       setUsers(usersWithErrors);
     }
@@ -40,14 +46,19 @@ function App() {
 
   const handleSeed = (event) => {
     setSeedValue(event.target.value);
+    setUsers([]);
+    setPage(1);
   };
 
   function randomSeed() {
-    setSeedValue(Math.floor(Math.random() * 10000) + 1);
+    const randomValue = Math.floor(Math.random() * 10000) + 1;
+    setSeedValue(randomValue);
+    setUsers([]);
+    setPage(1);
   }
 
   const loadMore = useCallback(() => {
-    setPageNumber((prevPage) => prevPage + 1); // Increment page number
+    setPage((prevPage) => prevPage + 1);
   }, []);
 
   useEffect(() => {
@@ -59,10 +70,13 @@ function App() {
         loadMore();
       }
     };
-    window.addEventListener("scroll", handleScroll);
-  }, [loadMore]);
 
-  // ---------------------------------------------------------------
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [loadMore]);
 
   return (
     <>
@@ -73,16 +87,16 @@ function App() {
       </Navbar>
       <br />
       <br />
-      <div class="container">
-        <div class="column">
-          <label for="cars">
+      <div className="container">
+        <div className="column">
+          <label htmlFor="cars">
             <strong>Region: </strong>
           </label>
           <select
             name="region"
             id="region"
             onChange={getSelectedRegion}
-            value={seletedCountry}
+            value={selectedCountry}
           >
             <option value="usa">USA</option>
             <option value="poland">Poland</option>
@@ -90,8 +104,8 @@ function App() {
           </select>
         </div>
 
-        <div class="column">
-          <label htmlFor="sldier">
+        <div className="column">
+          <label htmlFor="slider">
             <strong>Error: </strong>
           </label>
           <input
@@ -112,8 +126,8 @@ function App() {
             onChange={handleSlider}
           />
         </div>
-        <div class="column">
-          <label for="seed">
+        <div className="column">
+          <label htmlFor="seed">
             <strong>Seed: </strong>
           </label>
           <input
@@ -132,15 +146,13 @@ function App() {
             <FaShuffle />
           </Button>
         </div>
-        <div class="column">
+        <div className="column">
           <Button type="button" variant="success">
             Export
           </Button>
         </div>
       </div>
       <br />
-      {/* -------------------------------------------------------- */}
-
       <Table striped bordered hover variant="dark">
         <thead>
           <tr>
